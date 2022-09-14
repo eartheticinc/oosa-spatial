@@ -58,7 +58,7 @@ const getStartPosiiton = (centroid, coordinates) => {
   return directionElement
 }
 
-const Centerer = ({ center }) => {
+const MapCenter = ({ center }) => {
   const map = useMap()
   useEffect(() => {
     map?.setView?.(center, 14)
@@ -204,7 +204,7 @@ function App() {
             {JSON.stringify(intersects.intersects)}
           </Tooltip>
         </Circle>}
-        <Centerer center={intersects.center} />
+        <MapCenter center={intersects.center} />
       </MapContainer>
     </div>
   );
