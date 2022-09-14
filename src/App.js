@@ -22,10 +22,11 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import { polygonList } from './data'
+import { polygonList, projections } from './data'
+import proj4 from "proj4";
 
 const units = { units: 'feet' };
-const defaultIntersects = { intersects: null, center: [0, 0] }
+const defaultIntersects = { intersects: null, center: [0, 0], xy: null }
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -78,6 +79,7 @@ const getPolyGon = (polygon, reverse = false) => {
 function App() {
   const [inputs, setInputs] = useState({})
   const [intersects, setIntersects] = useState(defaultIntersects)
+  const [latlng, setlatlng] = useState({ lat: "", lng: "" })
 
   const isValid = useMemo(() => {
     return !!(inputs?.polygon && inputs?.ns && inputs?.ew && inputs?.nsfeet && inputs?.ewfeet)
@@ -89,6 +91,15 @@ function App() {
         ...val,
         [name]: value,
         ...(name === 'polygon' && { _polygon: polygonList[value] })
+      }
+    })
+  }
+
+  const onChangelatLng = ({ target: { name, value } }) => {
+    setlatlng(val => {
+      return {
+        ...val,
+        [name]: value
       }
     })
   }
@@ -111,10 +122,18 @@ function App() {
 
     var intersects = lineIntersect(eastWestLine, northSouthLine);
     if (!intersects.features.length) {
-      setIntersects(v => ({ ...v, intersects: null }))
+      setIntersects(v => ({ ...v, intersects: null, xy: null }))
       return alert("No Intersect")
     }
+
+    var xy
+    if (inputs?.projection) {
+      xy = proj4(projections[inputs?.projection].projection,
+        intersects.features[0].geometry.coordinates)
+    }
+
     setIntersects({
+      xy,
       intersects: intersects.features[0].geometry.coordinates.reverse(),
       center: _centroid.geometry.coordinates.reverse()
     })
@@ -124,14 +143,24 @@ function App() {
     handleCalculation()
   }, [inputs, handleCalculation])
 
+  const handleCalculationLatLng = () => {
+    const xy = proj4(projections[latlng?.projection].projection,
+      [parseFloat(latlng.lng), parseFloat(latlng.lat)])
+    setlatlng(v => ({ ...v, xy }))
+  }
+
   const renderPolygon = () => {
     const keys = Object.keys(polygonList)
     return keys.map(key => <option key={key} value={key}>{key}</option>)
   }
 
+  const renderProjections = () => {
+    const keys = Object.keys(projections)
+    return keys.map(key => <option key={key} value={key}>{key}</option>)
+  }
+
   const renderSidePanel = () => {
     return <div style={{
-      width: '20vw',
       display: 'flex',
       flexDirection: 'column',
       padding: 10
@@ -176,22 +205,107 @@ function App() {
         placeholder="Enter EW feet"
         type={"number"}
       />
+      <select
+        onChange={onChange}
+        name="projection"
+        id="projection"
+      >
+        <option value={""}>Select Projection</option>
+        {renderProjections()}
+      </select>
       <button
         onClick={handleCalculation}
         style={{ padding: "4px" }}
         disabled={!isValid}
       >
-        Calculate
+        Calculate Intersection
       </button>
+
       <div>
-        {JSON.stringify(inputs, null, 2)}
+        <div>
+          Lat: <span>{intersects?.intersects?.[0]}</span>
+        </div>
+        <div>
+          Lng: <span>{intersects?.intersects?.[1]}</span>
+        </div>
+        <div>
+          X: <span>{parseInt(intersects?.xy?.[0] || 0)}</span>
+        </div>
+        <div>
+          Y: <span>{parseInt(intersects?.xy?.[1] || 0)}</span>
+        </div>
       </div>
+
+      <details>
+        <summary>
+          Inputs
+        </summary>
+        {JSON.stringify(inputs, null, 2)}
+      </details>
     </div>
+  }
+
+  const renderXYConvertor = () => {
+
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 10
+      }}>
+        <input
+          onChange={onChangelatLng}
+          name="lat"
+          id="lat"
+          placeholder="Enter Lat"
+          type={"number"}
+          step="any"
+        />
+        <input
+          onChange={onChangelatLng}
+          name="lng"
+          id="lng"
+          placeholder="Enter Lng"
+          type={"number"}
+          step="any"
+        />
+        <select
+          onChange={onChangelatLng}
+          name="projection"
+          id="projection"
+        >
+          <option value={""}>Select Projection</option>
+          {renderProjections()}
+        </select>
+        <button
+          onClick={handleCalculationLatLng}
+          style={{ padding: "4px" }}
+          disabled={!isValid}
+        >
+          Calculate XY
+        </button>
+        <div>
+          <div>
+            X: <span>{parseInt(latlng?.xy?.[0] || 0)}</span>
+          </div>
+          <div>
+            Y: <span>{parseInt(latlng?.xy?.[1] || 0)}</span>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div id="map" style={{ display: 'flex' }}>
-      {renderSidePanel()}
+      <div style={{
+        width: "20vw",
+        overflowY: "scroll",
+        height: "100vh"
+      }}>
+        {renderSidePanel()}
+        {renderXYConvertor()}
+      </div>
       <MapContainer
         center={intersects.center}
         zoom={14}

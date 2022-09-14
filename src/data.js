@@ -330,3 +330,34 @@ export const polygonList = {
         ]
     ]
 }
+
+export const projections = {
+    Z14: {
+        projection: 'PROJCS["NAD_1927_BLM_Zone_14N",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-99.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_BLM_Zone_14N_32064_PZ14_FILTERED.json"
+    },
+    Z15: {
+        projection: 'PROJCS["NAD_1927_BLM_Zone_15N",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_BLM_Zone_15N_32065_PZ15_FILTERED.json"
+    },
+    Z16: {
+        projection: 'PROJCS["NAD_1927_BLM_Zone_16N",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-87.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_BLM_Zone_16N_32066_PZ16_FILTERED.json"
+    },
+    Z17: {
+        projection: 'PROJCS["NAD_1927_BLM_Zone_17N",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-81.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_BLM_Zone_17N_32067_PZ17_FILTERED.json"
+    },
+    Z70: {
+        projection: 'PROJCS["NAD_1927_StatePlane_Texas_South_FIPS_4205",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",2000000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-98.5],PARAMETER["Standard_Parallel_1",26.16666666666667],PARAMETER["Standard_Parallel_2",27.83333333333333],PARAMETER["Latitude_Of_Origin",25.66666666666667],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_StatePlane_Texas_South_FIPS_4205_32041_PZ70_FILTERED.json"
+    },
+    Z71: {
+        projection: 'PROJCS["NAD_1927_StatePlane_Texas_South_Central_FIPS_4204",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",2000000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-99.0],PARAMETER["Standard_Parallel_1",28.38333333333333],PARAMETER["Standard_Parallel_2",30.28333333333333],PARAMETER["Latitude_Of_Origin",27.83333333333333],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_StatePlane_Texas_South_Central_FIPS_4204_32040_PZ71_FILTERED.json"
+    },
+    Z72: {
+        projection: 'PROJCS["NAD_1927_StatePlane_Louisiana_South_FIPS_1702",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",2000000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-91.33333333333333],PARAMETER["Standard_Parallel_1",29.3],PARAMETER["Standard_Parallel_2",30.7],PARAMETER["Latitude_Of_Origin",28.66666666666667],UNIT["Foot_US",0.3048006096012192]]',
+        file: "BOEM_BLOCKS_NAD_1927_StatePlane_Louisiana_South_FIPS_1702_26782_PZ72_FILTERED.json"
+    }
+}
