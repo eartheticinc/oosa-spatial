@@ -12,8 +12,6 @@ import {
 import {
   centroid,
   polygon as t_polygon,
-  point as t_point,
-  bearing,
   lineString,
   lineOffset,
   lineIntersect
@@ -25,6 +23,7 @@ import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { polygonList, projections } from './data'
 import proj4 from "proj4";
+import { getDirection, getPolygon } from "./utils";
 
 const units = { units: 'feet' };
 const defaultIntersects = { intersects: null, center: [0, 0], xy: null }
@@ -36,30 +35,6 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const getStartPosiiton = (centroid, coordinates) => {
-
-  var _bearing = bearing(centroid, t_point(coordinates[0]), { final: false });
-
-  //N,W,S,E
-  var directionElement = []
-  switch (true) {
-    case _bearing >= 0 && _bearing <= 90:
-      directionElement = [[0, 1], [1, 2], [2, 3], [3, 4]]
-      break;
-    case _bearing >= -90 && _bearing < 0:
-      directionElement = [[3, 4], [0, 1], [1, 2], [2, 3]]
-      break;
-    case _bearing >= -180 && _bearing < -90:
-      directionElement = [[2, 3], [3, 4], [0, 1], [1, 2]]
-      break;
-    default:
-      directionElement = [[1, 2], [2, 3], [3, 4], [0, 1]]
-      break;
-  }
-
-  return directionElement
-}
-
 const MapCenter = ({ center }) => {
   const map = useMap()
   useEffect(() => {
@@ -69,13 +44,6 @@ const MapCenter = ({ center }) => {
   return null
 }
 
-const getPolyGon = (polygon, reverse = false) => {
-  let coordinates = JSON.parse(JSON.stringify(polygon))
-  if (reverse) {
-    coordinates = coordinates.map(c => c.reverse())
-  }
-  return coordinates
-}
 
 function App() {
   const [inputs, setInputs] = useState({})
@@ -135,24 +103,31 @@ function App() {
 
   const handleCalculation = useCallback(() => {
     if (!isValid) return
-    const coordinates = getPolyGon(inputs._polygon)
+    const coordinates = getPolygon(inputs._polygon)
     const polygon = t_polygon([coordinates])
     const _centroid = centroid(polygon)
 
-    const [n, w, s, e] = getStartPosiiton(_centroid, coordinates)
+    const { EAST, WEST, NORTH, SOUTH } = coordinates.reduce(getDirection(_centroid), {})
 
-    var north = lineString([coordinates[n[0]], coordinates[n[1]]], { name: "north" })
-    var west = lineString([coordinates[w[0]], coordinates[w[1]]], { name: "west" })
-    var south = lineString([coordinates[s[0]], coordinates[s[1]]], { name: "south" })
-    var east = lineString([coordinates[e[0]], coordinates[e[1]]], { name: "east" })
+    var north = lineString(NORTH, { name: "north" })
+    var west = lineString(WEST, { name: "west" })
+    var south = lineString(SOUTH, { name: "south" })
+    var east = lineString(EAST, { name: "east" })
 
     var eastWestLine = lineOffset(inputs?.ns === "S" ? south : north, -parseInt(inputs.nsfeet), units)
     var northSouthLine = lineOffset(inputs?.ew === "W" ? west : east, -parseInt(inputs.ewfeet), units)
 
     var intersects = lineIntersect(eastWestLine, northSouthLine);
     if (!intersects.features.length) {
-      setIntersects(v => ({ ...v, intersects: null, xy: null }))
-      return alert("No Intersection")
+      setIntersects(v => ({
+        ...v,
+        eastWestLine,
+        northSouthLine,
+        intersects: null,
+        xy: null
+      }))
+      // alert("No Intersection")
+      return
     }
 
     var xy
@@ -356,7 +331,7 @@ function App() {
 
         {inputs?._polygon?.length && <Polygon
           pathOptions={{ color: 'red' }}
-          positions={getPolyGon(inputs._polygon, true)}
+          positions={getPolygon(inputs._polygon, true)}
         >
         </Polygon>}
 
@@ -380,6 +355,11 @@ function App() {
           pathOptions={{ color: 'blue' }}
           positions={intersects?.northSouthLine}>
         </Polyline>}
+
+        <Circle
+          pathOptions={{ color: "red" }}
+          center={intersects.center}
+        />
 
         <MapCenter center={intersects.center} />
 
