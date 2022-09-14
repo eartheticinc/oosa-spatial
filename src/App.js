@@ -6,6 +6,7 @@ import {
   Circle,
   Tooltip,
   useMap,
+  Polyline,
 } from "react-leaflet";
 
 import {
@@ -162,6 +163,8 @@ function App() {
 
     setIntersects({
       xy,
+      eastWestLine: eastWestLine.geometry.coordinates.slice(0).map(c => c.reverse()),
+      northSouthLine: northSouthLine.geometry.coordinates.slice(0).map(c => c.reverse()),
       intersects: intersects.features[0].geometry.coordinates.reverse(),
       center: _centroid.geometry.coordinates.reverse()
     })
@@ -367,7 +370,19 @@ function App() {
             {JSON.stringify(intersects.intersects)}
           </Tooltip>
         </Circle>}
+
+        {intersects?.eastWestLine && <Polyline
+          pathOptions={{ color: 'black' }}
+          positions={intersects?.eastWestLine}>
+        </Polyline>}
+
+        {intersects?.northSouthLine && <Polyline
+          pathOptions={{ color: 'blue' }}
+          positions={intersects?.northSouthLine}>
+        </Polyline>}
+
         <MapCenter center={intersects.center} />
+
       </MapContainer>
     </div>
   );
