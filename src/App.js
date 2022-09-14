@@ -85,14 +85,42 @@ function App() {
     return !!(inputs?.polygon && inputs?.ns && inputs?.ew && inputs?.nsfeet && inputs?.ewfeet)
   }, [inputs])
 
+  const onChangePolygon = ({ target: { value } }) => {
+    var _polygon = value.replace(/ /g, '')
+    try {
+      _polygon = JSON.parse(_polygon)
+      //Validate
+      var isValidArray = Array.isArray(_polygon) && Array.isArray(_polygon[0])
+      setInputs(v => ({ ...v, _polygon: isValidArray ? _polygon : null }))
+      if (isValidArray) {
+        //Update center
+        const polygon = t_polygon([_polygon])
+        const _centroid = centroid(polygon)
+        setIntersects(v => ({ ...v, center: _centroid.geometry.coordinates.reverse() }))
+      }
+    } catch (error) {
+      if (inputs?._polygon?.length) {
+        setInputs(v => ({ ...v, _polygon: null }))
+      }
+    }
+  }
+
   const onChange = ({ target: { name, value } }) => {
+    const _polygon = name === 'polygon' ? polygonList[value] : null
     setInputs(val => {
       return {
         ...val,
         [name]: value,
-        ...(name === 'polygon' && { _polygon: polygonList[value] })
+        ...(_polygon && { _polygon }),
+        ...((name === 'polygon' && value === "Other") && { _polygon: null }),
       }
     })
+    //Update center
+    if (_polygon) {
+      const polygon = t_polygon([_polygon])
+      const _centroid = centroid(polygon)
+      setIntersects(v => ({ ...v, center: _centroid.geometry.coordinates.reverse() }))
+    }
   }
 
   const onChangelatLng = ({ target: { name, value } }) => {
@@ -123,7 +151,7 @@ function App() {
     var intersects = lineIntersect(eastWestLine, northSouthLine);
     if (!intersects.features.length) {
       setIntersects(v => ({ ...v, intersects: null, xy: null }))
-      return alert("No Intersect")
+      return alert("No Intersection")
     }
 
     var xy
@@ -172,7 +200,14 @@ function App() {
       >
         <option value={""}>Select Polygon</option>
         {renderPolygon()}
+        <option value={"Other"}>Other</option>
       </select>
+      {inputs?.polygon === "Other" && <textarea
+        rows={10}
+        onChange={onChangePolygon}
+        name={"Other"}
+        id={"Other"}
+      />}
       <select
         onChange={onChange}
         name="ns"
@@ -316,7 +351,7 @@ function App() {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        {inputs?._polygon && <Polygon
+        {inputs?._polygon?.length && <Polygon
           pathOptions={{ color: 'red' }}
           positions={getPolyGon(inputs._polygon, true)}
         >

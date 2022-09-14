@@ -359,5 +359,12 @@ export const projections = {
     Z72: {
         projection: 'PROJCS["NAD_1927_StatePlane_Louisiana_South_FIPS_1702",GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",2000000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-91.33333333333333],PARAMETER["Standard_Parallel_1",29.3],PARAMETER["Standard_Parallel_2",30.7],PARAMETER["Latitude_Of_Origin",28.66666666666667],UNIT["Foot_US",0.3048006096012192]]',
         file: "BOEM_BLOCKS_NAD_1927_StatePlane_Louisiana_South_FIPS_1702_26782_PZ72_FILTERED.json"
+    },
+    WGS84: {
+        projection: 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]',
+    },
+    GCS: {
+        projection: 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]',
+        file: "BOEM_BLOCKS_NAD_1927_StatePlane_Louisiana_South_FIPS_1702_26782_PZ72_FILTERED.json"
     }
 }
