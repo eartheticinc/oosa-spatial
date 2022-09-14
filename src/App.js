@@ -67,13 +67,20 @@ const MapCenter = ({ center }) => {
   return null
 }
 
+const getPolyGon = (polygon, reverse = false) => {
+  let coordinates = JSON.parse(JSON.stringify(polygon))
+  if (reverse) {
+    coordinates = coordinates.map(c => c.reverse())
+  }
+  return coordinates
+}
 
 function App() {
   const [inputs, setInputs] = useState({})
   const [intersects, setIntersects] = useState(defaultIntersects)
 
   const isValid = useMemo(() => {
-    return inputs?.polygon && inputs?.ns && inputs?.ew && inputs?.nsfeet && inputs?.ewfeet
+    return !!(inputs?.polygon && inputs?.ns && inputs?.ew && inputs?.nsfeet && inputs?.ewfeet)
   }, [inputs])
 
   const onChange = ({ target: { name, value } }) => {
@@ -87,7 +94,8 @@ function App() {
   }
 
   const handleCalculation = useCallback(() => {
-    const coordinates = JSON.parse(JSON.stringify(inputs._polygon)).map(c => c.reverse())
+    if (!isValid) return
+    const coordinates = getPolyGon(inputs._polygon)
     const polygon = t_polygon([coordinates])
     const _centroid = centroid(polygon)
 
@@ -103,36 +111,41 @@ function App() {
 
     var intersects = lineIntersect(eastWestLine, northSouthLine);
     if (!intersects.features.length) {
-      setIntersects(defaultIntersects)
+      setIntersects(v => ({ ...v, intersects: null }))
       return alert("No Intersect")
     }
     setIntersects({
       intersects: intersects.features[0].geometry.coordinates.reverse(),
       center: _centroid.geometry.coordinates.reverse()
     })
-  }, [inputs])
+  }, [inputs, isValid])
 
   useEffect(() => {
-    if (!isValid) return
     handleCalculation()
-  }, [inputs, isValid, handleCalculation])
+  }, [inputs, handleCalculation])
 
-  const renderpolygon = () => {
+  const renderPolygon = () => {
     const keys = Object.keys(polygonList)
     return keys.map(key => <option key={key} value={key}>{key}</option>)
   }
 
   const renderSidePanel = () => {
-    return <div style={{ width: '20vw', alignContent: 'center', display: 'flex', flexDirection: 'column', padding: 10 }}>
-
-      <select onChange={onChange}
+    return <div style={{
+      width: '20vw',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: 10
+    }}>
+      <select
+        onChange={onChange}
         name="polygon"
         id="polygon"
       >
         <option value={""}>Select Polygon</option>
-        {renderpolygon()}
+        {renderPolygon()}
       </select>
-      <select onChange={onChange}
+      <select
+        onChange={onChange}
         name="ns"
         id="ns"
       >
@@ -147,7 +160,8 @@ function App() {
         placeholder="Enter NS feet"
         type={"number"}
       />
-      <select onChange={onChange}
+      <select
+        onChange={onChange}
         name="ew"
         id="ew"
       >
@@ -190,7 +204,7 @@ function App() {
 
         {inputs?._polygon && <Polygon
           pathOptions={{ color: 'red' }}
-          positions={inputs._polygon}
+          positions={getPolyGon(inputs._polygon, true)}
         >
         </Polygon>}
 
