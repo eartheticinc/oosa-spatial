@@ -51,7 +51,7 @@ function App() {
   const [latlng, setlatlng] = useState({ lat: "", lng: "" })
 
   const isValid = useMemo(() => {
-    return !!(inputs?.polygon && inputs?.ns && inputs?.ew && inputs?.nsfeet && inputs?.ewfeet)
+    return !!(inputs?.polygon && inputs?.ns && inputs?.ew && inputs?.nsfeet && inputs?.ewfeet && inputs?._polygon?.length)
   }, [inputs])
 
   const onChangePolygon = ({ target: { value } }) => {
@@ -103,6 +103,7 @@ function App() {
 
   const handleCalculation = useCallback(() => {
     if (!isValid) return
+    console.log(inputs._polygon)
     const coordinates = getPolygon(inputs._polygon)
     const polygon = t_polygon([coordinates])
     const _centroid = centroid(polygon)
