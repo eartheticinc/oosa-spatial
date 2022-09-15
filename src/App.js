@@ -103,7 +103,6 @@ function App() {
 
   const handleCalculation = useCallback(() => {
     if (!isValid) return
-    console.log(inputs._polygon)
     const coordinates = getPolygon(inputs._polygon)
     const polygon = t_polygon([coordinates])
     const _centroid = centroid(polygon)
